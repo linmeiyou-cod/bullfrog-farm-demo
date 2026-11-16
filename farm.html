@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#eef3ef">
+  <title>养殖场详情</title>
+  <link rel="stylesheet" href="assets/style.css">
+  <link rel="stylesheet" href="assets/farm-detail.css">
+  <link rel="stylesheet" href="assets/operations.css">
+  <script defer src="assets/farms.js"></script>
+  <script defer src="assets/people.js"></script>
+  <script defer src="assets/operations.js"></script>
+  <script defer src="assets/operations-form.js"></script>
+  <script defer src="assets/farm-detail.js"></script>
+</head>
+<body>
+  <header class="masthead">
+    <div class="shell masthead-inner">
+      <div class="brand"><span class="brand-mark" aria-hidden="true"></span>牛蛙养殖场地</div>
+      <span class="demo"><span aria-hidden="true"></span>示例资料</span>
+    </div>
+  </header>
+
+  <main class="shell detail-page">
+    <nav class="detail-navigation" aria-label="返回地图及所在地区">
+      <a id="return-to-map" class="return-link" href="index.html"><span aria-hidden="true">←</span> 返回地图</a>
+      <span class="detail-region" id="detail-region"></span>
+    </nav>
+
+    <article id="farm-detail" hidden>
+      <header class="detail-heading">
+        <div class="detail-heading-line"><h1 id="detail-title"></h1><span class="farm-grade" id="detail-grade"></span></div>
+        <dl class="detail-address">
+          <div><dt>详细地址</dt><dd id="detail-address"></dd></div>
+        </dl>
+      </header>
+
+      <section class="operations-section" id="farm-operations" aria-labelledby="operations-heading">
+        <div class="operations-heading">
+          <h2 id="operations-heading">牛蛙养殖数据</h2>
+          <label class="report-month"><span>销量月份</span><input id="farm-month" type="month"></label>
+        </div>
+        <p class="operations-message" id="operation-message" role="status" hidden></p>
+        <div class="operations-grid">
+          <section class="operations-card area-card" aria-labelledby="farm-area-heading">
+            <h3 id="farm-area-heading">场地</h3>
+            <dl class="operation-metrics">
+              <div><dt>场地面积</dt><dd><strong id="farm-area">—</strong><span>亩</span></dd></div>
+            </dl>
+            <div class="operation-actions">
+              <button type="button" class="operation-button" data-operation="area">编辑面积</button>
+              <label class="grade-picker">
+                <span>标记</span>
+                <select id="farm-grade">
+                  <option value="">未标记</option><option value="red">红</option><option value="yellow">黄</option><option value="green">绿</option>
+                </select>
+              </label>
+            </div>
+          </section>
+          <section class="operations-card" aria-labelledby="farm-feed-heading">
+            <h3 id="farm-feed-heading">饲料</h3>
+            <dl class="operation-metrics">
+              <div><dt>当前存量</dt><dd><strong id="farm-feed-stock">—</strong><span>包</span></dd></div>
+              <div><dt>当月销量</dt><dd><strong id="farm-feed-sold">—</strong><span>包</span></dd></div>
+            </dl>
+            <div class="operation-actions">
+              <button type="button" class="operation-button operation-add" data-operation="increase" data-product="feed" aria-label="增加饲料存量">＋ 增加</button>
+              <button type="button" class="operation-button" data-operation="decrease" data-product="feed" aria-label="减少饲料存量">− 减少</button>
+              <button type="button" class="operation-text" data-operation="sales" data-product="feed" aria-label="编辑饲料销量">编辑销量</button>
+            </div>
+          </section>
+          <section class="operations-card" aria-labelledby="farm-frog-heading">
+            <h3 id="farm-frog-heading">牛蛙</h3>
+            <dl class="operation-metrics">
+              <div><dt>当前存量</dt><dd><strong id="farm-frog-stock">—</strong><span>斤</span></dd></div>
+              <div><dt>当月销量</dt><dd><strong id="farm-frog-sold">—</strong><span>斤</span></dd></div>
+            </dl>
+            <div class="operation-actions">
+              <button type="button" class="operation-button operation-add" data-operation="increase" data-product="frog" aria-label="增加牛蛙存量">＋ 增加</button>
+              <button type="button" class="operation-button" data-operation="decrease" data-product="frog" aria-label="减少牛蛙存量">− 减少</button>
+              <button type="button" class="operation-text" data-operation="sales" data-product="frog" aria-label="编辑牛蛙销量">编辑销量</button>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <div class="detail-grid">
+        <section class="detail-panel" aria-labelledby="photos-heading">
+          <h2 id="photos-heading">场地图片</h2>
+          <div class="photo-stack" id="photo-stack"></div>
+          <p class="photo-empty" id="photo-empty" hidden>暂无场地图片</p>
+        </section>
+
+        <section class="detail-panel" aria-labelledby="people-heading">
+          <div class="people-heading">
+            <h2 id="people-heading">人员资料</h2>
+            <span id="people-count" class="people-count"></span>
+          </div>
+          <ul class="person-list" id="person-list"></ul>
+          <p class="people-empty" id="people-empty" hidden>这个场地暂未关联人员。</p>
+        </section>
+      </div>
+    </article>
+
+    <div class="detail-panel detail-unavailable" id="detail-unavailable" hidden>
+      <h1>找不到这个养殖场</h1>
+      <p>请返回地图，从养殖场名单查看场地。</p>
+    </div>
+    <noscript>请开启浏览器的 JavaScript 后查看场地详情。</noscript>
+  </main>
+
+  <dialog id="operation-dialog" class="operation-dialog" aria-labelledby="operation-title">
+    <form id="operation-form">
+      <h2 id="operation-title"></h2>
+      <p id="operation-context"></p>
+      <label for="operation-amount" id="operation-amount-label"></label>
+      <input id="operation-amount" type="number" min="0" required autofocus>
+      <label class="record-sale" id="operation-record-sale" hidden>
+        <input id="operation-sold" type="checkbox"><span>实际售出，计入当月销量</span>
+      </label>
+      <p id="operation-error" class="operation-error" role="alert" hidden></p>
+      <div class="dialog-actions">
+        <button type="button" class="operation-button" id="cancel-operation">取消</button>
+        <button type="submit" class="operation-button operation-confirm" id="save-operation">保存</button>
+      </div>
+    </form>
+  </dialog>
+
+  <template id="person-template">
+    <li class="person-row">
+      <div class="person-header">
+        <div class="person-identity">
+          <h3 data-name></h3>
+          <p data-role-age></p>
+        </div>
+        <dl class="person-pay">
+          <dt>当前月薪</dt>
+          <dd data-pay></dd>
+        </dl>
+      </div>
+      <p class="person-work"><span>工作内容</span><span data-work></span></p>
+    </li>
+  </template>
+</body>
+</html>

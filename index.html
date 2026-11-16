@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#eef3ef">
+  <meta name="description" content="从全国地图逐级查看各省市和区县的养殖场分布。">
+  <title>牛蛙养殖场地图</title>
+  <link rel="stylesheet" href="assets/style.css">
+  <link rel="stylesheet" href="assets/operations.css">
+  <script defer src="assets/echarts.min.js"></script>
+  <script defer src="assets/maps/100000.js"></script>
+  <script defer src="assets/maps/cities.js"></script>
+  <script defer src="assets/farms.js"></script>
+  <script defer src="assets/operations.js"></script>
+  <script defer src="assets/operations-overview.js"></script>
+  <script defer src="assets/app.js"></script>
+</head>
+<body>
+  <header class="masthead">
+    <div class="shell masthead-inner">
+      <div class="brand"><span class="brand-mark" aria-hidden="true"></span>牛蛙养殖场地</div>
+      <span class="demo"><span aria-hidden="true"></span>示例数据</span>
+    </div>
+  </header>
+
+  <main class="shell page">
+    <header class="page-heading">
+      <h1>牛蛙养殖场地图</h1>
+    </header>
+
+    <section class="operations-section overview-section" aria-labelledby="overview-heading">
+      <div class="operations-heading">
+        <h2 id="overview-heading">全国养殖看板</h2>
+        <label class="report-month"><span>销量月份</span><input id="overview-month" type="month"></label>
+      </div>
+      <p id="overview-message" class="operations-message" role="status" hidden></p>
+      <div class="operations-grid">
+        <section class="operations-card area-card" aria-labelledby="overview-area-heading">
+          <div class="operations-card-heading">
+            <h3 id="overview-area-heading">养殖场地</h3><span class="operations-subtitle" id="overview-farm-count"></span>
+          </div>
+          <dl class="operation-metrics">
+            <div><dt>总面积</dt><dd><strong id="overview-area">—</strong><span>亩</span></dd><small id="overview-area-missing" hidden></small></div>
+          </dl>
+          <div class="grade-counts" aria-label="场地标记数量">
+            <span class="farm-grade" data-grade="red">红 <b id="overview-red"></b></span>
+            <span class="farm-grade" data-grade="yellow">黄 <b id="overview-yellow"></b></span>
+            <span class="farm-grade" data-grade="green">绿 <b id="overview-green"></b></span>
+            <span class="farm-grade" id="overview-unmarked" hidden></span>
+          </div>
+        </section>
+        <section class="operations-card" aria-labelledby="overview-feed-heading">
+          <h3 id="overview-feed-heading">饲料</h3>
+          <dl class="operation-metrics">
+            <div><dt>当前存量</dt><dd><strong id="overview-feed-stock">—</strong><span>包</span></dd><small id="overview-feed-stock-missing" hidden></small></div>
+            <div><dt>当月销量</dt><dd><strong id="overview-feed-sold">—</strong><span>包</span></dd><small id="overview-feed-sold-missing" hidden></small></div>
+          </dl>
+        </section>
+        <section class="operations-card" aria-labelledby="overview-frog-heading">
+          <h3 id="overview-frog-heading">牛蛙</h3>
+          <dl class="operation-metrics">
+            <div><dt>当前存量</dt><dd><strong id="overview-frog-stock">—</strong><span>斤</span></dd><small id="overview-frog-stock-missing" hidden></small></div>
+            <div><dt>当月销量</dt><dd><strong id="overview-frog-sold">—</strong><span>斤</span></dd><small id="overview-frog-sold-missing" hidden></small></div>
+          </dl>
+        </section>
+      </div>
+    </section>
+
+    <div class="workspace">
+      <section class="map-panel" aria-label="行政区划地图">
+        <header class="map-header">
+          <nav class="breadcrumbs" id="breadcrumbs" aria-label="当前地图层级">
+            <span aria-current="page">全国</span>
+          </nav>
+          <button type="button" id="back" class="back" hidden><span aria-hidden="true">←</span> 上一级</button>
+        </header>
+        <div class="map-stage" id="map-stage">
+          <div class="map-heading">
+            <span id="map-level">省级分布</span>
+            <h2 id="map-title">中国地图</h2>
+          </div>
+          <p class="farm-count" role="status" aria-atomic="true">
+            <strong id="farm-count">—</strong><span>个养殖场</span>
+          </p>
+          <div id="map" class="chart" aria-label="地图，也可通过地区选择操作"></div>
+          <figure id="sea-inset" class="sea-inset" aria-label="南海诸岛附图">
+            <div id="sea-chart"></div>
+            <figcaption>南海诸岛</figcaption>
+          </figure>
+          <p id="map-status" class="map-status" role="status" hidden></p>
+          <div class="legend" aria-label="地图图例">
+            <span><i class="swatch demo-area" aria-hidden="true"></i>有养殖场</span>
+            <span><i class="swatch other-area" aria-hidden="true"></i>暂无养殖场</span>
+            <span id="selected-legend" hidden><i class="swatch selected-area" aria-hidden="true"></i>已选区县</span>
+          </div>
+        </div>
+      </section>
+
+      <aside class="controls" aria-labelledby="region-heading">
+        <h2 id="region-heading">选择地区</h2>
+        <div class="region-fields">
+          <div class="field">
+            <label for="province">省份</label>
+            <div class="select-shell"><select id="province"><option value="">全国</option></select></div>
+          </div>
+          <div class="field">
+            <label for="city">城市</label>
+            <div class="select-shell"><select id="city" disabled><option value="">先选省份</option></select></div>
+          </div>
+          <div class="field">
+            <label for="district">区县</label>
+            <div class="select-shell"><select id="district" disabled><option value="">先选城市</option></select></div>
+          </div>
+        </div>
+
+        <section class="farm-results" id="farm-results" aria-labelledby="farm-results-heading" hidden>
+          <h3 id="farm-results-heading">养殖场名单</h3>
+          <ul class="farm-list" id="farm-list"></ul>
+          <p class="farm-empty" id="farm-empty" hidden>此地区暂无示例养殖场。</p>
+        </section>
+
+        <section class="samples" aria-labelledby="sample-heading">
+          <h3 id="sample-heading">示例城市</h3>
+          <div class="sample-list">
+            <button type="button" class="sample" data-province="440000" data-city="445200">
+              <span class="sample-dot" aria-hidden="true"></span><span class="sample-name">揭阳</span><small>广东</small><span class="sample-arrow" aria-hidden="true">↗</span>
+            </button>
+            <button type="button" class="sample" data-province="440000" data-city="440800">
+              <span class="sample-dot" aria-hidden="true"></span><span class="sample-name">湛江</span><small>广东</small><span class="sample-arrow" aria-hidden="true">↗</span>
+            </button>
+            <button type="button" class="sample" data-province="450000" data-city="450100">
+              <span class="sample-dot" aria-hidden="true"></span><span class="sample-name">南宁</span><small>广西</small><span class="sample-arrow" aria-hidden="true">↗</span>
+            </button>
+          </div>
+        </section>
+      </aside>
+    </div>
+
+    <footer class="credit">地图数据来自 <a href="https://help.aliyun.com/zh/datav/datav-7-0/user-guide/datav-geoatlas-widgets/" target="_blank" rel="noopener noreferrer">DataV.GeoAtlas</a> · 仅供示例</footer>
+    <noscript>请开启浏览器的 JavaScript 后查看地图。</noscript>
+  </main>
+</body>
+</html>
